@@ -1,0 +1,10 @@
+slowness-emulation:
+  enable: false
+  millis: 5000
+
+price-client:
+  api-key: Kmwj964wHzbjsaKayNphnQ==zlufICwunuon54gY
+
+db:
+  price:
+    expiration-period-millis: 5000
