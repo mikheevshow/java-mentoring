@@ -2,6 +2,7 @@ package com.mentor.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 
 import static java.net.http.HttpResponse.BodyHandlers.ofByteArray;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class BitcoinPriceSlowClientImpl implements BitcoinPriceClient {
@@ -48,8 +50,11 @@ public class BitcoinPriceSlowClientImpl implements BitcoinPriceClient {
                 .header(API_KEY_HEADER_NAME, apiKey)
                 .build();
 
+        log.info("request: {}", request);
+
         try {
             final HttpResponse<byte[]> response = bitcoinPriceHttpClient.send(request, ofByteArray());
+            log.info("response: {}", response);
             return objectMapper.readValue(response.body(), BitcoinPriceResponse.class);
         } catch (Exception ex) {
             throw new RuntimeException(ex);

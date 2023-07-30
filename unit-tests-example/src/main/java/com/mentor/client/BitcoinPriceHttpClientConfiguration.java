@@ -9,7 +9,7 @@ import java.net.http.HttpClient;
 public class BitcoinPriceHttpClientConfiguration {
 
     @Bean
-    private HttpClient bitcoinPriceHttpClient() {
+    public HttpClient bitcoinPriceHttpClient() {
         return HttpClient.newHttpClient();
     }
 }

@@ -1,8 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:mydb
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+
 slowness-emulation:
   enable: false
   millis: 5000
 
 price-client:
+  slowness-emulation:
+    enabled: false
+    millis: 5000
   api-key: Kmwj964wHzbjsaKayNphnQ==zlufICwunuon54gY
 
 db:
