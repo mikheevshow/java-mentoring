@@ -1,14 +1,22 @@
 package com.mentor.service;
 
 import com.mentor.client.BitcoinPriceClient;
+import com.mentor.model.Price;
+import com.mentor.repository.BitcoinPriceDO;
 import com.mentor.repository.BitcoinPriceRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 // Мы указали какие класс(ы) хотим протестировать. Во время исполнения
@@ -18,18 +26,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest(classes = BitcoinPriceServiceImpl.class)
 public class BitcoinPriceServiceImplTest {
 
-    // Создаем бины-фальшивки зависимостей, которые требуются для
-    // работы сервиса BitcoinPriceServiceImpl.
-    // В дальнейшем мы будем определять поведение этих фальшивок,
-    // чтобы увидететь как отрабатывает реализация нашего сервиса
     @MockBean
     private BitcoinPriceClient rateClient;
 
     @MockBean
     private BitcoinPriceRepository repository;
 
-    // Так как мы в начале указали, какой класс собираемся тестировать,
-    // то теперь можем смело инжектить его в тест
     @Autowired
     private BitcoinPriceServiceImpl bitcoinPriceServiceImpl;
 
@@ -39,6 +41,39 @@ public class BitcoinPriceServiceImplTest {
     // что проиходит в тесте, какой результат ожидается и по какой причине
     @DisplayName("Should return actual price value from database")
     public void getFreshPriceFromDatabaseTest() {
+
+        Mockito.when(repository.getPrice(Mockito.eq("RUB"))).thenAnswer(i -> {
+            final BitcoinPriceDO priceDO = new BitcoinPriceDO();
+
+            priceDO.setPrice(BigDecimal.valueOf(2_000_000));
+            priceDO.setId(123123L);
+            priceDO.setLastUpdate(LocalDateTime.now());
+            priceDO.setSymbol("RUB");
+
+            return priceDO;
+        });
+
+        final Price price = bitcoinPriceServiceImpl.getPrice("RUB");
+
+
+        // Хорошо, но если падает на каждой строке, то не очень
+        Assertions.assertEquals(BigDecimal.valueOf(2_000_000), price.getPrice());
+        Assertions.assertEquals("RUB", price.getSymbol());
+
+        // Альтернатива 1 Soft Assertions из библиотеки assertj
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(price.getPrice()).isEqualTo(BigDecimal.valueOf(2_000_000));
+        softAssertions.assertThat(price.getSymbol()).isEqualTo("RUB");
+        softAssertions.assertAll();
+
+        // Альтернатива 2 изспользовать ожидаемый (expected) объект
+
+        final Price expectedPrice = new Price();
+        expectedPrice.setPrice(BigDecimal.valueOf(2_000_000));
+        expectedPrice.setSymbol("RUB");
+
+
+        assertThat(price).isEqualToIgnoringGivenFields(expectedPrice, "timestamp");
 
     }
 

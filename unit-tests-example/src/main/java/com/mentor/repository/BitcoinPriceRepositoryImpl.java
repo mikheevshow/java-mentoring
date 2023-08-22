@@ -24,8 +24,8 @@ public class BitcoinPriceRepositoryImpl implements BitcoinPriceRepository {
         );
     }
 
-    public void upsertPrice(String symbol, BigDecimal price) {
-        log.info("Starting upsert price relate to symbol {}, new price {}", symbol, price);
-        "MERGE INTO price "
-    }
+//    public void upsertPrice(String symbol, BigDecimal price) {
+//        log.info("Starting upsert price relate to symbol {}, new price {}", symbol, price);
+//        "MERGE INTO price "
+//    }
 }

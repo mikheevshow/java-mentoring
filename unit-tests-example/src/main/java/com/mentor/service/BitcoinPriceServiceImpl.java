@@ -28,18 +28,12 @@ public class BitcoinPriceServiceImpl implements BitcoinPriceService {
 
     @Override
     public Price getPrice(String symbol) {
-        final BitcoinPriceDO priceFromDB = repository.getPrice(symbol);
-        final LocalDateTime now = LocalDateTime.now();
-        if (priceFromDB == null || priceFromDB.getLastUpdate().plus(expirationMillis, MILLIS).isBefore(now)) {
-            final BitcoinPriceResponse response = rateClient.getPrice(symbol);
-            final BitcoinPriceDO priceForSave = new BitcoinPriceDO();
-        }
 
-        final BitcoinPriceResponse response = rateClient.getPrice(symbol);
+        final BitcoinPriceDO priceFromDB = repository.getPrice(symbol);
 
         final Price price = new Price();
-        price.setPrice(response.getPrice());
-        price.setSymbol(response.getSymbol());
+        price.setPrice(priceFromDB.getPrice());
+        price.setSymbol(priceFromDB.getSymbol());
 
         return price;
     }

@@ -40,17 +40,10 @@ public class BitcoinPriceRestControllerTest {
     @DisplayName("Should return bitcoin price to USD if symbol param not passed")
     public void shouldReturnPriceRelateToUSD() throws Exception {
 
-        when(bitcoinPriceService.getPrice(eq("USD"))).thenAnswer(iom -> {
-
-            final Price price = new Price();
-            price.setSymbol("USD");
-            price.setPrice(valueOf(20_000));
-
-            return price;
-        });
+        when(bitcoinPriceService.getPrice(eq("USD"))).thenThrow();
 
         final MvcResult mvcResult = mockMvc
-                .perform(get("/api/"))
+                .perform(get("/api/v1/get-price"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.price").value(valueOf(20_000)))
                 .andExpect(jsonPath("$.symbol").value("USD"))
